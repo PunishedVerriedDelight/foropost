@@ -6,17 +6,19 @@ import { signInStart, signInSuccess, signInFailure } from "../redux/user/userSli
 import OAuth from "../components/OAuth";
 
 export default function SignIn() {
-  const [formData, setFormData] = useState({});
-
+  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [submitted, setSubmitted] = useState(false); 
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const {loading, error: errorMessage} = useSelector(state => state.user);
+  
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitted(true);
 
     if (!formData.email || !formData.password) {
       return dispatch(signInFailure('Por favor llene los espacios vacios'));
@@ -57,7 +59,7 @@ export default function SignIn() {
             dialoga sobre temas de tu interés.
           </p>
           <p className="text-sm">
-            Ingresa con tu correo electrónico y contraseña.
+            Ingresa con tu correo electrónico y contraseña. Tambien puedes ingresar con tu ceunta Google.
           </p>
         </div>
         {/* right */}
@@ -103,7 +105,7 @@ export default function SignIn() {
               Registrarse
             </Link>
           </div>
-          {errorMessage && (
+          {submitted && errorMessage && (
             <Alert className="mt-5" color="failure">
               {errorMessage}
             </Alert>
