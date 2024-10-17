@@ -73,7 +73,7 @@ export default function SignUp() {
         {/* left */}
         <div className="flex-1">
           <Link to="/" className="font-bold dark:text-white text-4xl">
-            <span className="px-2 py-1 bg-gradient-to-r from-orange-500 to-yellow-300 rounded-lg text-white">
+            <span className="px-2 py-1 bg-gradient-to-r from-rose-500 via-rose-500 to-yellow-300 rounded-lg text-white dark:from-purple-500 dark:to-blue-600">
               FOROPOST
             </span>
           </Link>

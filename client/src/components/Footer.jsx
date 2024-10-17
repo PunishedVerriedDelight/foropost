@@ -5,7 +5,7 @@ import {BsFacebook, BsTwitterX, BsGithub, BsDiscord} from 'react-icons/bs'
 
 export default function FooterCom() {
   return (
-    <Footer container className="border border-t-8 border-teal-500">
+    <Footer container className="border border-t-8 border-cyan-500">
       <div className="w-full max-w-7xl mx-auto">
         <div className="grid w-full justify-around sm:flex md:grid-cols-1">
           <div className="mt-5">
@@ -15,8 +15,7 @@ export default function FooterCom() {
                     font-semibold dark:text-white"
             >
               <span
-                className="px-2 py-1 bg-gradient-to-r from-orange-500
-                     to-yellow-300 rounded-lg text-white"
+                className="px-2 py-1 bg-gradient-to-r from-rose-500 via-rose-500 to-yellow-300 rounded-lg text-white dark:from-purple-500 dark:to-blue-600"
               >
                 FOROPOST
               </span>
