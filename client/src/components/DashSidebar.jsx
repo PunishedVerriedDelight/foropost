@@ -28,7 +28,7 @@ export default function DashSidebar() {
             </Sidebar.Item>
           </Link>
           <Sidebar.Item icon={HiArrowSmRight} className="cursor-pointer">
-            Cerrar sesión
+            Cerrar Sesión
           </Sidebar.Item>
         </Sidebar.ItemGroup>
       </Sidebar.Items>
