@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import Category from './models/categorie.model.js'; 
 
 const addCategories = async () => {
-    await mongoose.connect('mongodb+srv://amontoyasv:amontoyasv1998@mern-blog.zzp3o.mongodb.net/foroppost?retryWrites=true&w=majority&appName=mern-blog'); 
+    await mongoose.connect(JWT_SECRET); 
 
     const categories = [
         { name: "Tecnología", description: "Todo sobre las últimas innovaciones y tendencias en tecnología." },
