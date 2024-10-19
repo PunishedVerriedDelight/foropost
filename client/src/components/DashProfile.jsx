@@ -21,9 +21,10 @@ import {
 } from "../redux/user/userSlice";
 import { useDispatch } from "react-redux";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
+import { Link } from 'react-router-dom';
 
 export default function DashProfile() {
-  const { currentUser, error } = useSelector((state) => state.user);
+  const { currentUser, error, loading } = useSelector((state) => state.user);
   const [imageFile, setImageFile] = useState(null);
   const [imageFileUrl, setImageFileUrl] = useState(null);
   const [imageFileUploadProgress, setImageFileUploadProgress] = useState(null);
@@ -142,13 +143,13 @@ export default function DashProfile() {
 
   const handleSignout = async () => {
     try {
-      const res = await fetch('/api/user/signout', {
-        method: 'POST',
+      const res = await fetch("/api/user/signout", {
+        method: "POST",
       });
       const data = await res.json();
       if (!res.ok) {
         console.log(data.message);
-      }else{
+      } else {
         dispatch(signoutSuccess());
       }
     } catch (error) {
@@ -226,9 +227,20 @@ export default function DashProfile() {
           placeholder="Contraseña"
           onChange={handleChange}
         />
-        <Button type="submit" gradientMonochrome="teal" outline>
-          Actualizar datos
+        <Button type="submit" gradientMonochrome="teal" outline dissabled={loading || imageFileUploading}>
+          {loading ? 'Cargando...' : 'Actualizar datos'}
         </Button>
+        {currentUser.isAdmin && (
+          <Link to={'/create-post'}>
+            <Button
+              type="button"
+              gradientDuoTone="purpleToPink"
+              className="w-full"
+            >
+              Crear un Post
+            </Button>
+          </Link>
+        )}
       </form>
       <div className="flex justify-between mt-5">
         <span
@@ -237,7 +249,10 @@ export default function DashProfile() {
         >
           Eliminar Cuenta
         </span>
-        <span onClick={handleSignout} className="text-slate-600 dark:text-slate-300 cursor-pointer">
+        <span
+          onClick={handleSignout}
+          className="text-slate-600 dark:text-slate-300 cursor-pointer"
+        >
           Cerrar Sesión
         </span>
       </div>
