@@ -227,7 +227,7 @@ export default function DashProfile() {
           placeholder="Contraseña"
           onChange={handleChange}
         />
-        <Button type="submit" gradientMonochrome="teal" outline dissabled={loading || imageFileUploading}>
+        <Button type="submit" gradientMonochrome="teal" outline disabled={loading || imageFileUploading}>
           {loading ? 'Cargando...' : 'Actualizar datos'}
         </Button>
         {currentUser.isAdmin && (
