@@ -16,7 +16,7 @@ import {
   updateFailure,
   deleteUserStart,
   deleteUserSuccess,
-  delateUserFailure,
+  deleteUserFailure,
   signoutSuccess,
 } from "../redux/user/userSlice";
 import { useDispatch } from "react-redux";
@@ -132,12 +132,12 @@ export default function DashProfile() {
       });
       const data = await res.json();
       if (!res.ok) {
-        dispatch(delateUserFailure(data.message));
+        dispatch(deleteUserFailure(data.message));
       } else {
         dispatch(deleteUserSuccess(data));
       }
     } catch (error) {
-      dispatch(delateUserFailure(error.message));
+      dispatch(deleteUserFailure(error.message));
     }
   };
 
