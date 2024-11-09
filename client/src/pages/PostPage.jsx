@@ -1,16 +1,15 @@
 import { Button, Spinner } from "flowbite-react";
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
 import CallToAction from "../components/CallToAction";
+import CommentSection from "../components/CommentSection";
 
 export default function PostPage() {
   const { postSlug } = useParams();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [post, setPost] = useState(null);
-
-  const { currentUser } = useSelector((state) => state.user);
+  const [postUser, setPostUser] = useState(null);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -23,11 +22,15 @@ export default function PostPage() {
           setLoading(false);
           return;
         }
-        if (res.ok) {
-          setPost(data.posts[0]);
-          setLoading(false);
-          setError(false);
-        }
+        const postData = data.posts[0];
+        setPost(postData);
+
+        const userRes = await fetch(`/api/user/${postData.userId}`);
+        const userData = await userRes.json();
+        setPostUser(userData.user);
+
+        setLoading(false);
+        setError(false);
       } catch (error) {
         setError(true);
         setLoading(false);
@@ -46,14 +49,14 @@ export default function PostPage() {
   return (
     <main className="p-3 flex flex-col max-w-6xl mx-auto min-h-screen mt-8">
       <div className="max-w-2xl mx-auto">
-        {currentUser && (
+        {postUser && (
           <div className="flex items-center mb-4 text-sm text-gray-500">
             <img
-              src={currentUser.profilePicture}
-              alt={currentUser.username}
+              src={postUser.profilePicture}
+              alt={postUser.username}
               className="w-8 h-8 rounded-full mr-2"
             />
-            <span>@{currentUser.username}</span>
+            <span>@{postUser.username}</span>
           </div>
         )}
 
@@ -88,11 +91,13 @@ export default function PostPage() {
 
       <div
         className="p-1 max-w-2xl mx-auto w-full post-content mt-3"
-        dangerouslySetInnerHTML={{ __html: post && post.content }}>
-        </div>
-        <div className="p-2 max-w-2xl mx-auto w-full">
-            <CallToAction />
-        </div>
+        dangerouslySetInnerHTML={{ __html: post && post.content }}
+      ></div>
+
+      <div className="p-2 max-w-2xl mx-auto w-full">
+        <CallToAction />
+      </div>
+      <CommentSection postId={post._id} />
     </main>
   );
 }
