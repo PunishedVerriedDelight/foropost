@@ -27,7 +27,7 @@ export default function PostPage() {
 
         const userRes = await fetch(`/api/user/${postData.userId}`);
         const userData = await userRes.json();
-        setPostUser(userData.user);
+        setPostUser(userData);
 
         setLoading(false);
         setError(false);
