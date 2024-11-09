@@ -1,15 +1,20 @@
 import { Button, Spinner } from "flowbite-react";
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
+import { FaThumbsUp } from "react-icons/fa";
+import { useSelector } from "react-redux";
 import CallToAction from "../components/CallToAction";
 import CommentSection from "../components/CommentSection";
 
 export default function PostPage() {
   const { postSlug } = useParams();
+  const { currentUser } = useSelector((state) => state.user);
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [post, setPost] = useState(null);
   const [postUser, setPostUser] = useState(null);
+  const [liked, setLiked] = useState(false);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -24,6 +29,9 @@ export default function PostPage() {
         }
         const postData = data.posts[0];
         setPost(postData);
+        if (postData && currentUser) {
+          setLiked(postData.likes.includes(currentUser._id));
+        }
 
         const userRes = await fetch(`/api/user/${postData.userId}`);
         const userData = await userRes.json();
@@ -37,7 +45,29 @@ export default function PostPage() {
       }
     };
     fetchPost();
-  }, [postSlug]);
+  }, [postSlug, currentUser]);
+
+  const handleLike = async () => {
+    if (!currentUser) {
+      navigate("/sign-in");
+      return;
+    }
+    try {
+      const res = await fetch(`/api/post/likePost/${post._id}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${currentUser.token}`, // Asegúrate de pasar el token
+        },
+      });
+      if (res.ok) {
+        const updatedPost = await res.json();
+        setPost(updatedPost);
+        setLiked(updatedPost.likes.includes(currentUser._id));
+      }
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
 
   if (loading)
     return (
@@ -45,6 +75,8 @@ export default function PostPage() {
         <Spinner size="xl" />
       </div>
     );
+
+  if (error) return <div>Error loading post.</div>;
 
   return (
     <main className="p-3 flex flex-col max-w-6xl mx-auto min-h-screen mt-8">
@@ -86,6 +118,20 @@ export default function PostPage() {
             Tiempo de lectura: {post && (post.content.length / 1000).toFixed(0)}{" "}
             min
           </span>
+          <span>
+            <button
+              onClick={handleLike}
+              className={`text-gray-500 hover:text-blue-500 ${
+                liked && "!text-blue-500"
+              }`}
+            >
+              <FaThumbsUp className="mr-2" />
+            </button>
+            {post.numberOfLikes > 0 &&
+              post.numberOfLikes +
+                " " +
+                (post.numberOfLikes === 1 ? " Like" : "Likes")}
+          </span>
         </div>
       </div>
 
@@ -97,7 +143,7 @@ export default function PostPage() {
       <div className="p-2 max-w-2xl mx-auto w-full">
         <CallToAction />
       </div>
-      <CommentSection postId={post._id} />
+      <CommentSection postId={post && post._id} />
     </main>
   );
 }

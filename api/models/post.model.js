@@ -17,8 +17,7 @@ const postSchema = new mongoose.Schema(
     },
     image: {
       type: String,
-      default:
-        "https://www.hostinger.com/tutorials/wp-content/uploads/sites/2/2021/09/how-to-write-a-blog-post.png",
+      default: "https://www.hostinger.com/tutorials/wp-content/uploads/sites/2/2021/09/how-to-write-a-blog-post.png",
     },
     category: {
       type: String,
@@ -29,9 +28,18 @@ const postSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
+    likes: {
+      type: [String], // IDs de usuarios que han dado "Like"
+      default: [],
+    },
+    numberOfLikes: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );
+
 
 const Post = mongoose.model("Post", postSchema);
 
