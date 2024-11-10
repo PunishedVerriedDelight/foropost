@@ -1,14 +1,17 @@
-import { Alert, Button, Textarea, TextInput } from "flowbite-react";
+import { Alert, Button, Modal, Textarea, TextInput } from "flowbite-react";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import Comment from "./Comment";
+import { HiOutlineExclamationCircle } from 'react-icons/hi'
 
 export default function CommentSection({ postId }) {
   const { currentUser } = useSelector((state) => state.user);
   const [comment, setComment] = useState("");
   const [commentError, setCommentError] = useState(null);
   const [comments, setComments] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [commentToDelete, setCommentToDelete] = useState(null);
   const navigate = useNavigate();
   const theme = useSelector((state) => state.theme.theme);
 
@@ -66,7 +69,7 @@ export default function CommentSection({ postId }) {
       if (res.ok) {
         const data = await res.json();
         setComments(
-          comments.map((comment) => 
+          comments.map((comment) =>
             comment._id === commentId
               ? {
                   ...comment,
@@ -84,10 +87,29 @@ export default function CommentSection({ postId }) {
 
   const handleEdit = async (comment, editedContent) => {
     setComments(
-      comments.map((c) => 
-      c._id === comment._id ? { ...c, content: editedContent } : c
+      comments.map((c) =>
+        c._id === comment._id ? { ...c, content: editedContent } : c
       )
     );
+  };
+
+  const handleDelete = async (commentId) => {
+    setShowModal(false);
+    try {
+      if(!currentUser){
+        navigate('/sign-in');
+        return;
+      }
+      const res = await fetch(`/api/comment/deleteComment/${commentId}`, {
+        method: 'DELETE',
+      });
+      if(res.ok){
+        const data = await res.json();
+          setComments(comments.filter((comment) => comment._id !== commentId))
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
   };
 
   return (
@@ -131,7 +153,13 @@ export default function CommentSection({ postId }) {
             <p className="text-gray-500 dark:text-gray-400 text-xs">
               Te quedan {300 - comment.length} carácteres
             </p>
-            <Button outline gradientDuoTone={theme === 'dark' ? 'purpleToBlue' : 'pinkToOrange'} type="submit">
+            <Button
+              outline
+              gradientDuoTone={
+                theme === "dark" ? "purpleToBlue" : "pinkToOrange"
+              }
+              type="submit"
+            >
               Comentar
             </Button>
           </div>
@@ -153,10 +181,62 @@ export default function CommentSection({ postId }) {
             </div>
           </div>
           {comments.map((comment) => (
-            <Comment key={comment._id} comment={comment} onLike={handleLike} onEdit={handleEdit}/>
+            <Comment
+              key={comment._id}
+              comment={comment}
+              onLike={handleLike}
+              onEdit={handleEdit}
+              onDelete={(commentId)=>{
+                setShowModal(true)
+                setCommentToDelete(commentId)
+              }}
+            />
           ))}
         </>
       )}
+      <Modal
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        popup
+        size="md"
+        className={`${
+          theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-gray-800"
+        }`}
+      >
+        <Modal.Header
+          className={`${
+            theme === "dark"
+              ? "bg-gray-800 text-white"
+              : "bg-gray-100 text-gray-800"
+          }`}
+        />
+        <Modal.Body
+          className={`${
+            theme === "dark"
+              ? "bg-gray-800 text-white"
+              : "bg-gray-100 text-gray-800"
+          }`}
+        >
+          <div className="text-center">
+            <HiOutlineExclamationCircle className="h-14 w-14 mb-4 mx-auto" />
+            <h3
+              className={`mb-5 text-lg ${
+                theme === "dark" ? "text-gray-400" : "text-gray-600"
+              }`}
+            >
+              ¿Estás seguro de que quieres eliminar este comentario?
+            </h3>
+            <div className="flex justify-center gap-4">
+              <Button color="failure" onClick={() => handleDelete(commentToDelete)}>
+                Sí, Estoy seguro
+              </Button>
+              <Button color="cyan" onClick={() => setShowModal(false)}>
+                No, Cancelar
+              </Button>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 }

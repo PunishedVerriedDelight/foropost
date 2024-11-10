@@ -118,7 +118,7 @@ export default function PostPage() {
             Tiempo de lectura: {post && (post.content.length / 1000).toFixed(0)}{" "}
             min
           </span>
-          <span>
+          <span className="text-gray-500 dark:text-gray-400">
             <button
               onClick={handleLike}
               className={`text-gray-500 hover:text-blue-500 ${

@@ -151,7 +151,7 @@ export default function DashPosts() {
                 theme === "dark" ? "text-gray-400" : "text-gray-600"
               }`}
             >
-              ¿Estás seguro de que quieres eliminar este post??
+              ¿Estás seguro de que quieres eliminar este post?
             </h3>
             <div className="flex justify-center gap-4">
               <Button color="failure" onClick={handleDeletePost}>
