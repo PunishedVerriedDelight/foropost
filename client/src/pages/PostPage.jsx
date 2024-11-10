@@ -5,6 +5,7 @@ import { FaThumbsUp } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import CallToAction from "../components/CallToAction";
 import CommentSection from "../components/CommentSection";
+import PostCard from "../components/PostCard";
 
 export default function PostPage() {
   const { postSlug } = useParams();
@@ -15,6 +16,7 @@ export default function PostPage() {
   const [post, setPost] = useState(null);
   const [postUser, setPostUser] = useState(null);
   const [liked, setLiked] = useState(false);
+  const [recentPosts, setRecentPosts] = useState(null);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -47,6 +49,21 @@ export default function PostPage() {
     fetchPost();
   }, [postSlug, currentUser]);
 
+  useEffect(() => {
+    try {
+      const fetchRecentPosts = async () => {
+        const res = await fetch(`/api/post/getposts?limit=3`);
+        const data = await res.json();
+        if (res.ok) {
+          setRecentPosts(data.posts);
+        }
+      };
+      fetchRecentPosts();
+    } catch (error) {
+      console.log(error.message);
+    }
+  }, []);
+
   const handleLike = async () => {
     if (!currentUser) {
       navigate("/sign-in");
@@ -56,7 +73,7 @@ export default function PostPage() {
       const res = await fetch(`/api/post/likePost/${post._id}`, {
         method: "PUT",
         headers: {
-          Authorization: `Bearer ${currentUser.token}`, 
+          Authorization: `Bearer ${currentUser.token}`,
         },
       });
       if (res.ok) {
@@ -144,6 +161,14 @@ export default function PostPage() {
         <CallToAction />
       </div>
       <CommentSection postId={post && post._id} />
+
+      <div className="flex flex-col justify-center items-center mb-5">
+        <h1 className="text-xl mt-5">Posts recientes</h1>
+        <div className="flex flex-wrap gap-5 mt-5 justify-center">
+          {recentPosts &&
+            recentPosts.map((post) => (<PostCard key={post._id} post={post} />))}
+        </div>
+      </div>
     </main>
   );
 }
