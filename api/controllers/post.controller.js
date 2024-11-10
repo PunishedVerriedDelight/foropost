@@ -1,6 +1,5 @@
 import Post from "../models/post.model.js";
-import { errorHandler } from "../utils/error.js";
-
+import Comment from "../models/comment.model.js";  
 export const create = async (req, res, next) => {
   if (!req.user.isAdmin) {
     return next(errorHandler(403, "No tienes permitido crear posts"));
@@ -31,6 +30,7 @@ export const getposts = async (req, res, next) => {
     const startIndex = parseInt(req.query.startIndex) || 0;
     const limit = parseInt(req.query.limit) || 9;
     const sortDirection = req.query.order === "asc" ? 1 : -1;
+
     const posts = await Post.find({
       ...(req.query.userId && { userId: req.query.userId }),
       ...(req.query.category && { category: req.query.category }),
@@ -47,6 +47,16 @@ export const getposts = async (req, res, next) => {
       .sort({ updateAt: sortDirection })
       .skip(startIndex)
       .limit(limit);
+    
+    const postsWithCommentsCount = await Promise.all(
+      posts.map(async (post) => {
+        const commentsCount = await Comment.countDocuments({ postId: post._id });
+        return {
+          ...post.toObject(),
+          numberOfComments: commentsCount,
+        };
+      })
+    );
 
     const totalPosts = await Post.countDocuments();
     const now = new Date();
@@ -60,7 +70,7 @@ export const getposts = async (req, res, next) => {
     });
 
     res.status(200).json({
-      posts,
+      posts: postsWithCommentsCount,
       totalPosts,
       lastMonthPosts,
     });
