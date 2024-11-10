@@ -4,6 +4,7 @@ import { Sidebar } from "flowbite-react";
 import {
   HiAnnotation,
   HiArrowSmRight,
+  HiChartPie,
   HiDocumentText,
   HiOutlineUserGroup,
   HiUser,
@@ -56,6 +57,13 @@ export default function DashSidebar() {
               Perfil
             </Sidebar.Item>
           </Link>
+          {currentUser && currentUser.isAdmin && (
+            <Link to='/dashboard?tab=dash'>
+              <Sidebar.Item active={tab === 'dash'} icon={HiChartPie} as='div'>
+                Dashboard
+              </Sidebar.Item>
+            </Link>
+          )}
           {currentUser.isAdmin && (
             <>
               <Link to="/dashboard?tab=posts">
