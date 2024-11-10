@@ -10,6 +10,7 @@ export default function CommentSection({ postId }) {
   const [commentError, setCommentError] = useState(null);
   const [comments, setComments] = useState([]);
   const navigate = useNavigate();
+  const theme = useSelector((state) => state.theme.theme);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -81,6 +82,14 @@ export default function CommentSection({ postId }) {
     }
   };
 
+  const handleEdit = async (comment, editedContent) => {
+    setComments(
+      comments.map((c) => 
+      c._id === comment._id ? { ...c, content: editedContent } : c
+      )
+    );
+  };
+
   return (
     <div className="max-w-2xl mx-auto w-full p-1">
       {currentUser ? (
@@ -122,7 +131,7 @@ export default function CommentSection({ postId }) {
             <p className="text-gray-500 dark:text-gray-400 text-xs">
               Te quedan {300 - comment.length} carácteres
             </p>
-            <Button outline gradientDuoTone="purpleToBlue" type="submit">
+            <Button outline gradientDuoTone={theme === 'dark' ? 'purpleToBlue' : 'pinkToOrange'} type="submit">
               Comentar
             </Button>
           </div>
@@ -144,7 +153,7 @@ export default function CommentSection({ postId }) {
             </div>
           </div>
           {comments.map((comment) => (
-            <Comment key={comment._id} comment={comment} onLike={handleLike} />
+            <Comment key={comment._id} comment={comment} onLike={handleLike} onEdit={handleEdit}/>
           ))}
         </>
       )}

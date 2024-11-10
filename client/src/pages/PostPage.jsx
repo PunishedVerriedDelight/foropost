@@ -56,7 +56,7 @@ export default function PostPage() {
       const res = await fetch(`/api/post/likePost/${post._id}`, {
         method: "PUT",
         headers: {
-          Authorization: `Bearer ${currentUser.token}`, // Asegúrate de pasar el token
+          Authorization: `Bearer ${currentUser.token}`, 
         },
       });
       if (res.ok) {
