@@ -93,7 +93,7 @@ export default function PostPage() {
       </div>
     );
 
-  if (error) return <div>Error loading post.</div>;
+  if (error) return <div>Error Cargando el post.</div>;
 
   return (
     <main className="p-3 flex flex-col max-w-6xl mx-auto min-h-screen mt-8">

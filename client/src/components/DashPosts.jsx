@@ -71,7 +71,7 @@ export default function DashPosts() {
     <div className='table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500'>
       {currentUser.isAdmin && userPosts.length > 0 ? (
         <>
-        <Table hoverable className='shadow-md'>
+        <Table hoverable className='shadow-md text-center'>
           <Table.Head>
             <Table.HeadCell>Información Actualizada</Table.HeadCell>
             <Table.HeadCell>Imagen del post</Table.HeadCell>
@@ -99,10 +99,10 @@ export default function DashPosts() {
                   <span onClick={()=>{
                     setShowModal(true);
                     setPostIdToDelete(post._id);
-                  }} className='font-medium text-red-500 hover:underline cursor-pointer'>Eliminar</span>
+                  }} className='text-xs font-medium text-red-500 hover:underline cursor-pointer'>Eliminar</span>
                 </Table.Cell>
                 <Table.Cell>
-                  <Link className='text-teal-500 hover:underline' to={`/update-post/${post._id}`}>
+                  <Link className='text-xs text-teal-500 hover:underline' to={`/update-post/${post._id}`}>
                     <span>Editar</span>
                   </Link>
                 </Table.Cell>

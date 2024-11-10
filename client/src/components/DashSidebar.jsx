@@ -1,15 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Sidebar } from "flowbite-react";
-import { HiArrowSmRight, HiDocumentText, HiOutlineUserGroup, HiUser } from "react-icons/hi";
+import {
+  HiAnnotation,
+  HiArrowSmRight,
+  HiDocumentText,
+  HiOutlineUserGroup,
+  HiUser,
+} from "react-icons/hi";
 import { signoutSuccess } from "../redux/user/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 export default function DashSidebar() {
   const location = useLocation();
   const dispatch = useDispatch();
-  const {currentUser} = useSelector(state => state.user);
+  const { currentUser } = useSelector((state) => state.user);
   const [tab, setTab] = useState("");
+  
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
     const tabFromUrl = urlParams.get("tab");
@@ -50,13 +57,35 @@ export default function DashSidebar() {
             </Sidebar.Item>
           </Link>
           {currentUser.isAdmin && (
-            <Link to="/dashboard?tab=posts">
+            <>
+              <Link to="/dashboard?tab=posts">
+                <Sidebar.Item
+                  active={tab === "posts"}
+                  icon={HiDocumentText}
+                  as="div"
+                >
+                  Posts
+                </Sidebar.Item>
+              </Link>
+              <Link to="/dashboard?tab=comments">
+                <Sidebar.Item
+                  active={tab === "comments"}
+                  icon={HiAnnotation}
+                  as="div"
+                >
+                  Comentarios
+                </Sidebar.Item>
+              </Link>
+            </>
+          )}
+          {!currentUser.isAdmin && (
+            <Link to="/dashboard?tab=comments">
               <Sidebar.Item
-                active={tab === "posts"}
-                icon={HiDocumentText}
+                active={tab === "comments"}
+                icon={HiAnnotation}
                 as="div"
               >
-                Posts
+                Mis Comentarios
               </Sidebar.Item>
             </Link>
           )}

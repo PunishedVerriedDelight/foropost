@@ -50,6 +50,7 @@ export default function DashUsers() {
   }
 
   const handleDeleteUser = async () => {
+    setShowModal(false);
     try {
       const res = await fetch(`/api/user/delete/${userIdToDelete}`, {
         method: 'DELETE',
@@ -70,7 +71,7 @@ export default function DashUsers() {
     <div className='table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500'>
       {currentUser.isAdmin && users.length > 0 ? (
         <>
-        <Table hoverable className='shadow-md'>
+        <Table hoverable className='shadow-md text-center'>
           <Table.Head>
             <Table.HeadCell>Fecha de creación</Table.HeadCell>
             <Table.HeadCell>Imagen de usuario</Table.HeadCell>
@@ -93,7 +94,7 @@ export default function DashUsers() {
                   <span onClick={()=>{
                     setShowModal(true);
                     setUserIdToDelete(user._id);
-                  }} className='font-medium text-red-500 hover:underline cursor-pointer'>Eliminar</span>
+                  }} className='text-xs font-medium text-red-500 hover:underline cursor-pointer'>Eliminar</span>
                 </Table.Cell>
               </Table.Row>
             </Table.Body>
