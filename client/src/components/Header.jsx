@@ -1,6 +1,6 @@
 import { Avatar, Button, Dropdown, Navbar, TextInput } from "flowbite-react";
-import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AiOutlineSearch } from "react-icons/ai";
 import { FaMoon, FaSun } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
@@ -9,25 +9,43 @@ import { signoutSuccess } from "../redux/user/userSlice";
 
 export default function Header() {
   const path = useLocation().pathname;
+  const location = useLocation();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
+  const [searchTerm, setSearchTerm] = useState("");
   const { theme } = useSelector((state) => state.theme);
-
+  
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const searchTermFronURL = urlParams.get("searchTerm");
+    if (searchTermFronURL) {
+      setSearchTerm(searchTermFronURL);
+    }
+  }, [location.search]);
 
   const handleSignout = async () => {
     try {
-      const res = await fetch('/api/user/signout', {
-        method: 'POST',
+      const res = await fetch("/api/user/signout", {
+        method: "POST",
       });
       const data = await res.json();
       if (!res.ok) {
         console.log(data.message);
-      }else{
+      } else {
         dispatch(signoutSuccess());
       }
     } catch (error) {
       console.log(error.message);
     }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const urlParams = new URLSearchParams(location.search);
+    urlParams.set("searchTerm", searchTerm);
+    const searchQuery = urlParams.toString();
+    navigate(`/search?${searchQuery}`);
   };
 
   return (
@@ -37,18 +55,18 @@ export default function Header() {
         className="self-center whitespace-nowrap text-sm sm:text-xl 
         font-semibold dark:text-white"
       >
-        <span
-          className="px-2 py-1 bg-gradient-to-r from-rose-500 via-rose-500 to-yellow-300 rounded-lg text-white dark:from-purple-500 dark:to-blue-600"
-        >
+        <span className="px-2 py-1 bg-gradient-to-r from-rose-500 via-rose-500 to-yellow-300 rounded-lg text-white dark:from-purple-500 dark:to-blue-600">
           FOROPOST
         </span>
       </Link>
-      <form>
+      <form onSubmit={handleSubmit}>
         <TextInput
-          type="texto"
+          type="text"
           placeholder="Buscar..."
           rightIcon={AiOutlineSearch}
           className="hidden lg:inline"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
         />
       </form>
       <Button className="w-12 h-10 lg:hidden" color="gray" pill>
@@ -61,7 +79,7 @@ export default function Header() {
           pill
           onClick={() => dispatch(toggleTheme())}
         >
-          {theme === 'light' ? <FaMoon /> : <FaSun />}
+          {theme === "light" ? <FaMoon /> : <FaSun />}
         </Button>
         {currentUser ? (
           <Dropdown
@@ -81,7 +99,7 @@ export default function Header() {
               <Dropdown.Item>Perfil</Dropdown.Item>
             </Link>
             <Dropdown.Divider />
-            <Dropdown.Item onClick={handleSignout} >Cerrar sesión</Dropdown.Item>
+            <Dropdown.Item onClick={handleSignout}>Cerrar sesión</Dropdown.Item>
           </Dropdown>
         ) : (
           <Link to="/sign-in">
