@@ -52,7 +52,7 @@ export default function FooterCom() {
                   Github
                 </Footer.Link>
                 <Footer.Link
-                  href="discordapp.com/usuarios/cxlea"
+                  href="https://discord.com/users/876190361708556299"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
