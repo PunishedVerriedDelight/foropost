@@ -29,7 +29,7 @@ const postSchema = new mongoose.Schema(
       unique: true,
     },
     likes: {
-      type: [String], // IDs de usuarios que han dado "Like"
+      type: [String], 
       default: [],
     },
     numberOfLikes: {

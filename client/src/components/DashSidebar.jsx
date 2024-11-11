@@ -8,6 +8,7 @@ import {
   HiDocumentText,
   HiOutlineUserGroup,
   HiUser,
+  HiStar,
 } from "react-icons/hi";
 import { signoutSuccess } from "../redux/user/userSlice";
 import { useDispatch, useSelector } from "react-redux";
@@ -86,6 +87,15 @@ export default function DashSidebar() {
               </Link>
             </>
           )}
+          <Link to="/dashboard?tab=favorites">
+            <Sidebar.Item
+              active={tab === "favorites"}
+              icon={HiStar}
+              as="div"
+            >
+              Favoritos
+            </Sidebar.Item>
+          </Link>
           {!currentUser.isAdmin && (
             <Link to="/dashboard?tab=comments">
               <Sidebar.Item

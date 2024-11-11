@@ -1,7 +1,7 @@
 import { Button, Spinner } from "flowbite-react";
 import React, { useEffect, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { FaThumbsUp } from "react-icons/fa";
+import { FaThumbsUp, FaStar } from "react-icons/fa"; 
 import { useSelector } from "react-redux";
 import CallToAction from "../components/CallToAction";
 import CommentSection from "../components/CommentSection";
@@ -16,6 +16,7 @@ export default function PostPage() {
   const [post, setPost] = useState(null);
   const [postUser, setPostUser] = useState(null);
   const [liked, setLiked] = useState(false);
+  const [favorited, setFavorited] = useState(false); 
   const [recentPosts, setRecentPosts] = useState(null);
 
   useEffect(() => {
@@ -33,6 +34,14 @@ export default function PostPage() {
         setPost(postData);
         if (postData && currentUser) {
           setLiked(postData.likes.includes(currentUser._id));
+
+          const favRes = await fetch(`/api/favorite/getFavorites`, {
+            headers: {
+              Authorization: `Bearer ${currentUser.token}`,
+            },
+          });
+          const favoritesData = await favRes.json();
+          setFavorited(favoritesData.some((fav) => fav._id === postData._id));
         }
 
         const userRes = await fetch(`/api/user/${postData.userId}`);
@@ -50,18 +59,18 @@ export default function PostPage() {
   }, [postSlug, currentUser]);
 
   useEffect(() => {
-    try {
-      const fetchRecentPosts = async () => {
+    const fetchRecentPosts = async () => {
+      try {
         const res = await fetch(`/api/post/getposts?limit=3`);
         const data = await res.json();
         if (res.ok) {
           setRecentPosts(data.posts);
         }
-      };
-      fetchRecentPosts();
-    } catch (error) {
-      console.log(error.message);
-    }
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+    fetchRecentPosts();
   }, []);
 
   const handleLike = async () => {
@@ -80,6 +89,30 @@ export default function PostPage() {
         const updatedPost = await res.json();
         setPost(updatedPost);
         setLiked(updatedPost.likes.includes(currentUser._id));
+      }
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
+
+  const handleFavorite = async () => {
+    if (!currentUser) {
+      navigate("/sign-in");
+      return;
+    }
+    try {
+      const url = favorited
+        ? `/api/favorite/removeFavorite/${post._id}`
+        : `/api/favorite/addFavorite/${post._id}`;
+      const method = favorited ? "DELETE" : "POST";
+      const res = await fetch(url, {
+        method,
+        headers: {
+          Authorization: `Bearer ${currentUser.token}`,
+        },
+      });
+      if (res.ok) {
+        setFavorited(!favorited);
       }
     } catch (error) {
       console.error(error.message);
@@ -148,6 +181,17 @@ export default function PostPage() {
               post.numberOfLikes +
                 " " +
                 (post.numberOfLikes === 1 ? " Like" : "Likes")}
+          </span>
+          <span className="text-gray-500 dark:text-gray-400">
+            <button
+              onClick={handleFavorite}
+              className={`text-gray-500 hover:text-yellow-500 ${
+                favorited && "!text-yellow-500"
+              }`}
+            >
+              <FaStar className="mr-2" />
+            </button>
+            {favorited ? "En favoritos" : "Agregar a favoritos"}
           </span>
         </div>
       </div>
